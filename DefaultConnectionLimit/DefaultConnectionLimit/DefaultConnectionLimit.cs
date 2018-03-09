@@ -13,6 +13,9 @@
     /// made with the <see cref="HttpClient"/>, but the <see cref="ServicePointManager.DefaultConnectionLimit"/>
     /// is being applied instead.
     /// </summary>
+    /// <remarks>
+    /// Fixed in <see href="https://blogs.msdn.microsoft.com/dotnet/2018/02/05/announcing-net-framework-4-7-2-early-access-build-3052/"/>.
+    /// </remarks>
     [TestClass]
     public class DefaultConnectionLimit
     {
@@ -52,7 +55,7 @@
                 HttpResponseMessage response = await httpClient.GetAsync("/").ConfigureAwait(false);
 
                 sp = ServicePointManager.FindServicePoint(uri);
-                Assert.AreEqual(bingConnectionLimit, sp.ConnectionLimit, $"If run with .NET 4.7.1 installed on the machine, this check fails and instead sp.ConnectionLimit == ServicePointManager.DefaultConnectionLimit ({defaultConnectionLimit})");
+                Assert.AreEqual(bingConnectionLimit, sp.ConnectionLimit, $"If run with .NET 4.7.1 installed on the machine, this check fails and instead sp.ConnectionLimit == ServicePointManager.DefaultConnectionLimit ({defaultConnectionLimit}) applies.");
             }
         }
 
@@ -81,6 +84,10 @@
 
                         case 461310:
                             this.TestContext.WriteLine(".NET Framework 4.7.1");
+                            break;
+
+                        case 461804:
+                            this.TestContext.WriteLine(".NET Framework 4.7.2 Early Access build 3052");
                             break;
 
                         default:
