@@ -53,9 +53,47 @@
                 httpClient.BaseAddress = uri;
 
                 HttpResponseMessage response = await httpClient.GetAsync("/").ConfigureAwait(false);
+                Assert.IsNotNull(response);
 
                 sp = ServicePointManager.FindServicePoint(uri);
                 Assert.AreEqual(bingConnectionLimit, sp.ConnectionLimit, $"If run with .NET 4.7.1 installed on the machine, this check fails and instead sp.ConnectionLimit == ServicePointManager.DefaultConnectionLimit ({defaultConnectionLimit}) applies.");
+
+                // Checks if the default limits are applied.
+                var secondaryUri = new Uri("https://www.google.com");
+                response = await httpClient.GetAsync(secondaryUri).ConfigureAwait(false);
+                Assert.IsNotNull(response);
+
+                sp = ServicePointManager.FindServicePoint(secondaryUri);
+                Assert.AreEqual(defaultConnectionLimit, sp.ConnectionLimit);
+            }
+        }
+
+        /// <summary>
+        /// Validate that the default limits still apply.
+        /// </summary>
+        [TestMethod]
+        public async Task DefaultLimitsAreApplied()
+        {
+            DetermineDotNetFramework();
+
+            // Set the default value to something other than 2 or 4.
+            const int defaultConnectionLimit = 10;
+            const int bingConnectionLimit = 20;
+
+            Assert.AreNotEqual(defaultConnectionLimit, bingConnectionLimit, "Please choose different limits.");
+
+            var uri = new Uri("https://www.google.com");
+            ServicePointManager.DefaultConnectionLimit = defaultConnectionLimit;
+            ServicePoint sp = ServicePointManager.FindServicePoint(uri);
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.BaseAddress = uri;
+
+                HttpResponseMessage response = await httpClient.GetAsync("/").ConfigureAwait(false);
+
+                Assert.IsNotNull(response);
+                sp = ServicePointManager.FindServicePoint(uri);
+                Assert.AreEqual(defaultConnectionLimit, sp.ConnectionLimit);
             }
         }
 
