@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+// <copyright file="directory.build.props" company="Stephan Adler">
+// Copyright (c) Stephan Adler.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// </copyright>
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+  </PropertyGroup>
+
+  <PropertyGroup Label="General Settings">
+    <ThisComponentName>Microsoft CloudBuild Process Host</ThisComponentName>
+    <ThisComponentDirectory>$(MSBuildThisFileDirectory)</ThisComponentDirectory>
+  </PropertyGroup>
+
+
+
+
+
+  <PropertyGroup Label="General Settings">
+    <ThisComponentName>Microsoft CloudBuild Process Host</ThisComponentName>
+    <ThisComponentDirectory>$(MSBuildThisFileDirectory)</ThisComponentDirectory>
+
+    <AssemblyName>Microsoft.CloudBuild.ProcessHost.$(MSBuildProjectName)</AssemblyName>
+    <RootNamespace>Microsoft.CloudBuild.ProcessHost.$(MSBuildProjectName)</RootNamespace>
+
+    <Deterministic Condition=" '$(Deterministic)' == '' ">true</Deterministic>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Prefer32Bit Condition=" '$(Prefer32Bit)' == '' ">false</Prefer32Bit>
+    <HighEntropyVA Condition=" '$(HighEntropyVA)' == '' ">true</HighEntropyVA>
+    <CopyRetryCount Condition=" '$(CopyRetryCount)' == '' ">1</CopyRetryCount>
+    <CopyRetryDelayMilliseconds Condition=" '$(CopyRetryDelayMilliseconds)' == '' ">30000</CopyRetryDelayMilliseconds>
+
+    <IsFastBuild Condition=" '$(IsFastBuild)' == '' And ('$(BuildingInsideVisualStudio)' == 'true' Or '$(NCRUNCH)' != '') ">true</IsFastBuild>
+    <IsFastBuild Condition=" '$(IsFastBuild)' == '' ">false</IsFastBuild>
+    <IsFastBuild>$([System.Convert]::ToBoolean("$(IsFastBuild)"))</IsFastBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(UsingMicrosoftNETSdk)' == 'true' ">
+    <!--
+    CAUTION: RunCodeAnalysis enables old school FxCop, which doesn't work with .NET Standard and .NET Core projects!
+    -->
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <EnableDefaultItems>false</EnableDefaultItems>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)inc\Analysis\RoslynAnalyzers.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' ">
+    <!-- TargetRuntime = Managed would be the normal condition, but that property is not set yet. -->
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+
+    <SignAssembly Condition=" '$(SignAssembly)' == '' ">true</SignAssembly>
+    <SignAssemblyValidation Condition=" '$(SignAssemblyValidation)' == '' ">true</SignAssemblyValidation>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)inc\IdentityPublicKey.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorIdentityKeyFile>$(MSBuildThisFileDirectory)inc\IdentityKey.snk</AssemblyOriginatorIdentityKeyFile>
+    <DelaySign Condition=" '$(DelaySign)' == '' ">true</DelaySign>
+
+    <RunCodeAnalysis Condition=" '$(RunCodeAnalysis)' == '' ">true</RunCodeAnalysis>
+    <CodeAnalysisTreatWarningsAsErrors Condition=" '$(CodeAnalysisTreatWarningsAsErrors)' == '' ">true</CodeAnalysisTreatWarningsAsErrors>
+    <CodeAnalysisRuleSet Condition=" '$(CodeAnalysisRuleSet)' == '' ">$(MSBuildThisFileDirectory)inc\Analysis\Strict.Library.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SignAssembly)' == 'true' ">
+    <DefineConstants>$(DefineConstants);SIGN_STRONGNAME</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition=" '$(MSBuildProjectExtension)' == '.csproj' ">
+    <Compile Include="$(MSBuildThisFileDirectory)inc\DefaultAssemblyProperties.cs">
+      <Link>Properties\DefaultAssemblyProperties.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)inc\Version.cs">
+      <Link>Properties\Version.cs</Link>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)inc\IdentityPublicKeys.cs">
+      <Link>Properties\IdentityPublicKeys.cs</Link>
+    </Compile>
+    <Content Include="$(WorkingCopyRoot)\LICENSE.txt">
+      <Link>LICENSE.txt</Link>
+      <PackagePath>\</PackagePath>
+      <IncludeInPackage>true</IncludeInPackage>
+    </Content>
+    <!--
+    <None Include="$(MSBuildThisFileDirectory)README.md"/>
+    -->
+    <None Include="$(CodeAnalysisRuleSet)" Condition=" '$(CodeAnalysisRuleSet)' != '' " >
+      <Link>Properties\%(Filename)%(Extension)</Link>
+    </None>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)inc\Analysis\stylecop.json">
+      <Link>Properties\%(Filename)%(Extension)</Link>
+    </AdditionalFiles>
+    <!--
+    <CodeAnalysisDictionary Include="$(MSBuildThisFileDirectory)inc\Analysis\CustomDictionary.xml">
+      <Link>Properties\%(Filename)%(Extension)</Link>
+    </CodeAnalysisDictionary>
+    -->
+  </ItemGroup>
+
+  <Import Project="$([MSBuild]::GetPathOfFileAbove('$(MSBuildThisFile)', '$(MSBuildThisFileDirectory)..\'))" />
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(IsFastBuild)' == 'true' ">
+    <SignAssembly>false</SignAssembly>
+    <SignAssemblyValidation>false</SignAssemblyValidation>
+    <DelaySign>false</DelaySign>
+
+    <IsAuthenticodeSigningRequired>false</IsAuthenticodeSigningRequired>
+    
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
+
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Nuget Package Settings">
+    <LangVersion>Latest</LangVersion>
+    <Authors>Microsoft</Authors>
+    <Company>Microsoft Corporation</Company>
+    <Copyright>Copyright (c) Microsoft Corporation.</Copyright>
+    <PackageDescription>$(ThisComponentName) is a 
+mess
+  ■ topic 1
+  ■ topic 2</PackageDescription>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <!-- <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl> -->
+    <PackageProjectUrl>https://github.com/Microsoft/CloudBuildProcessHost</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/Microsoft/msbuild/raw/master/branding/MSBuild-NuGet-Icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/Microsoft/CloudBuildProcessHost.git</RepositoryUrl>
+  </PropertyGroup>  
+
+</Project>
