@@ -1,20 +1,23 @@
 # Copyright (c) Stephan Adler.
 
 <#
-.SYNOPSIS
-
 .DESCRIPTION
+This test demonstrates a difference in behavior when AzCopy is invoked to upload data to a storage account
+while excluding files and folders from the upload.
+
+In PowerShell Desktop the behavior is expected and only a single file (`the-only-file-that-should-exist.txt`)
+is being uploaded from the `upload-data` folder.
+
+In PowerShell Core the behavior has changed and only some (!?) files or folders are excluded from the upload,
+but most end up in the storage account.
+
 See https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10.
 #>
 
-# My standard preamble for all PowerShell scripts.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-if (-not ([System.String]::IsNullOrWhitespace($env:_DEBUG)))
-{
-    $global:DebugPreference = 'Continue'
-    Write-Debug "PSVersion = $($PSVersionTable.PSVersion); PSEdition = $($PSVersionTable.PSEdition); ExecutionPolicy = $(Get-ExecutionPolicy)"
-}
+$global:DebugPreference = 'Continue'
+Write-Debug "PSVersion = $($PSVersionTable.PSVersion); PSEdition = $($PSVersionTable.PSEdition); ExecutionPolicy = $(Get-ExecutionPolicy)"
 
 # Provide your own blob storage account URI here including a container and a final /.
 [string] $baseBlobUri = ''
