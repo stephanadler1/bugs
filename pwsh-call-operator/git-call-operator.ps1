@@ -1,20 +1,17 @@
 # Copyright (c) Stephan Adler.
 
 <#
-.SYNOPSIS
-
 .DESCRIPTION
-See https://docs.microsoft.com/en-us/azure/storage/common/storage-use-azcopy-v10.
+This test uses Git to find the first tag that matches the name in $existingTagPrefix.
+When using pwsh.exe that regular use of the call operator (&) will yield no result.
+With powershell.exe the call operator will work and the correct hash is returned.
 #>
 
-# My standard preamble for all PowerShell scripts.
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
-if (-not ([System.String]::IsNullOrWhitespace($env:_DEBUG)))
-{
-    $global:DebugPreference = 'Continue'
-    Write-Debug "PSVersion = $($PSVersionTable.PSVersion); PSEdition = $($PSVersionTable.PSEdition); ExecutionPolicy = $(Get-ExecutionPolicy)"
-}
+$global:DebugPreference = 'Continue'
+Write-Debug "PSVersion = $($PSVersionTable.PSVersion); PSEdition = $($PSVersionTable.PSEdition); ExecutionPolicy = $(Get-ExecutionPolicy)"
+
 
 [string] $script:existingTagPrefix = 'pwsh-test-tag'
 
@@ -72,12 +69,15 @@ $script:gitArgs = @(
     '--format="%H"'
 )
 
+# First reliably find the commit we want.
 $script:commitHash = Invoke-Tool $gitTool $gitArgs
 Write-Host "Actual commit: $commitHash"
 
-
+# Now invoke git as we would normally do... to domenstrate the different behaviors.
+Write-Debug "NOW THE TEST: Using the call operator to invoke $gitTool $gitArgs"
 $commitHash = & $gitTool $gitArgs
-Write-Host "Commit: $commitHash"
+Write-Debug "Exit code: $LASTEXITCODE"
+Write-Host "Found commit: $commitHash"
 if ([string]::IsNullOrWhitespace($commitHash))
 {
     throw 'Git commit shouldn''t be empty'
