@@ -10,12 +10,23 @@
 In order for the AzCopy tests to execute you need an [Azure Storage Account](https://learn.microsoft.com/en-us/azure/storage/common/storage-account-overview): General-purpose v2 LRS is sufficient.
 Follow the preparation steps in [azcopy-call-operator.ps1](./azcopy-call-operator.ps1)!
 
-## Test
+## Testing
 
 Run the tests by invoking `execute-tests.cmd` from your command shell. It doesn't matter whether it is PowerShell Desktop, Core or the legacy Windows Command shell.
 
+## Expected Results
 
-### Tested Versions
+* **git-call-operator.ps1:** The result should be that the commit hash of tag `pwsh-test-tag-1` is returned in all cases: `c849f18f5839d10936311b2163804cb36bbc88e7`.
+
+* **azcopy-call-operator.ps1:** The resulting content of the Azure Storage Account folder should be the same in all cases, only file `the-only-file-that-should-exist.txt` should be uploaded.
+
+    * The test generates different folders per shell (pwsh, powershell) that is being used to that you can examine the actual contents that is being uploaded.
+    * For reference it also creates subfolders `mitigated\pwsh` and `mitigated\powershell` that show the content when the crude mitigation is being applied.
+
+
+
+
+## Tested Versions
 
 | Application        | Executable     | Version                      |
 |--------------------|----------------|------------------------------|
