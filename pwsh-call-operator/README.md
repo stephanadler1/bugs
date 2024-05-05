@@ -2,8 +2,29 @@
 
 *4 May 2024.*
 
+> ✅ ***SOLVED: A change in the default behavior in PowerShell Core was introduced with version 7.3.
+  It switched the default mode that was used to pass arguments to external/native commands from
+  the now 'Legacy' mode to a new mode. The details of this change can be found in
+  [Using Experimental Features in PowerShell / PSNativeCommandArgumentPassing](https://learn.microsoft.com/en-us/powershell/scripting/learn/experimental-features?view=powershell-7.4#psnativecommandargumentpassing).***
+>
+> ***The section calls out that this is a breaking change, however the breaks can happen in very subtle and
+  non-obvious ways, so that discovering, debugging and fixing these is not straight-forward.
+  And it is referenced in an article called
+  [Using Experimental Features in PowerShell](https://learn.microsoft.com/en-us/powershell/scripting/learn/experimental-features?view=powershell-7.4)
+  which I wouldn't even have looked at if not for references in other PowerShell issues below.***
+
+
+-------------------------------------------------
+
+
 * Related AzCopy GitHub [issue #796](https://github.com/Azure/azure-storage-azcopy/issues/796) and the [corresponding comment](https://github.com/Azure/azure-storage-azcopy/issues/796#issuecomment-2094342928).
 * Related Pwsh GitHub issue: [None found](https://github.com/PowerShell/PowerShell/issues).
+
+There are related topics being discussed on the PowerShell issue tracker though:
+
+* #18991 [Introduce a new cmdlet for calls to native (external) programs ](https://github.com/PowerShell/PowerShell/issues/18991)
+* #18961 [Enhance Invoke-Command with parameters that provide ad-hoc overrides of $PSNativeCommandArgumentPassing and $PSNativeCommandUseErrorActionPreference](https://github.com/PowerShell/PowerShell/issues/18961#issuecomment-1386218069)
+* #21570 [Proposed command Invoke-Process - to solve common problems with Start-Process -Wait and stream redirection](https://github.com/PowerShell/PowerShell/issues/21570)
 
 ## Preparation
 
