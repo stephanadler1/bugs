@@ -43,12 +43,6 @@ if ([string]::IsNullOrWhitespace($sasUriToken) -or [string]::IsNullOrWhitespace(
 
 function Invoke-Tool
 {
-    <#
-    .SYNOPSIS
-    Invokes an external tool and applies certain mitigations to ensure command line arguments
-    are passed to the invoked tool and not intercepted and interpreted by PowerShell.
-    #>
-
     param(
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
